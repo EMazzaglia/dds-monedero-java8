@@ -1,0 +1,22 @@
+Cuenta: 
+
+1) Los nombres de los metodos en la clase de test empiezan con mayusculas y no especifican que hacen
+2) El saldo se maneja con double tipo primitivo.
+3) El saldo no se maneja con BigDecimal y puede estar perdiendo precision en las operaciones aritmeticas.
+4) El saldo esta inicializado en 0 por default y hay un constructor que crea una cuenta con saldo = 0. Codigo duplicado.
+Hay que remover el constructor.
+5) El setter de movimientos no se usa, no hay necesidad de exponerlo.
+6) El nombre del metodo "poner" no es descriptivo, se puede cambiar a "depositarDinero" lo mismo con "sacar" se puede cambiar a "extraerDinero"
+7) El nombre de la variable que recibe el metodo poner es "cuanto", no es descriptivo, deberia ser algo como "dineroADepositar", lo mismo con sacar.
+La variable que estoy pasando es un tipo primitivo en vez de utilizar la clase wrapper Double .
+8) Las validaciones del monto a poner, podrian estar en un metodo separado para poder reutilizar en caso de ser necesario. 
+9) getMovimientos().stream().filter(movimiento -> movimiento.isDeposito()).count() se podria extraer a un metodo "getCantidadDepositosEnElDia" para eso tambien
+habria que hacer algun tipo de strategy o aplicar herencia con Deposito, Extraccion y Movimiento como clases. 
+10)  new Movimiento(LocalDate.now(), cuanto, true).agregateA(this); se podria usar simplemente el metodo agregarMovimiento de la cuenta 
+(que tambien habria que refactorizar para que reciba un Movimiento en vez de los parametros para armar un Movimiento).
+11)     double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
+    	double limite = 1000 - montoExtraidoHoy;
+Esto se puede extraer a un metodo para evitar duplicaciones de codigo. El metodo podriaSer obtenerDisponibleExtraccion
+12) La excepction MaximoExtraccionDiarioException tiene que recibir como parametro el limiteMaximoDeExtraccion en vez de tener hardcodeado el 1000. podria ser:
+MaximoExtraccionDiarioException(mensaje,limiteMaximo,limiteActual)
+13) Se hace uso de la operacion Movimiento

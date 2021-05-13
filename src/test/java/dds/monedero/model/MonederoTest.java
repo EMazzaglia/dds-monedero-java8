@@ -7,9 +7,10 @@ import dds.monedero.exceptions.SaldoMenorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MonederoTest {
+
   private Cuenta cuenta;
 
   @BeforeEach
@@ -18,24 +19,36 @@ public class MonederoTest {
   }
 
   @Test
-  void Poner() {
-    cuenta.poner(1500);
+  void puedoRealizarUnDepositoDeDinero() {
+    Double montoPrevio = cuenta.getSaldo();
+    Integer montoADepositar = 1500;
+    assertDoesNotThrow(()-> cuenta.poner(montoADepositar));
   }
 
   @Test
-  void PonerMontoNegativo() {
+  void realizarUnDepositoDe500PesosumentaMiSaldoEn500Pesos() {
+    Double montoPrevio = cuenta.getSaldo();
+    Integer montoADepositar = 500;
+    cuenta.poner(montoADepositar);
+    assertEquals(cuenta.getSaldo(),montoPrevio + montoADepositar);
+  }
+
+  @Test
+  void ponerMontoNegativoLanzaMontoNegativoException() {
     assertThrows(MontoNegativoException.class, () -> cuenta.poner(-1500));
   }
 
   @Test
-  void TresDepositos() {
-    cuenta.poner(1500);
-    cuenta.poner(456);
-    cuenta.poner(1900);
+  void hacerTresDepositosNoLanzaNingunaExcepcion() {
+    assertDoesNotThrow(()-> {
+      cuenta.poner(1500);
+      cuenta.poner(456);
+      cuenta.poner(1900);
+    });
   }
 
   @Test
-  void MasDeTresDepositos() {
+  void hacerMasDeTresDepositosLanzaMaximaCantidadDepositosException() {
     assertThrows(MaximaCantidadDepositosException.class, () -> {
           cuenta.poner(1500);
           cuenta.poner(456);
@@ -45,15 +58,16 @@ public class MonederoTest {
   }
 
   @Test
-  void ExtraerMasQueElSaldo() {
+  void extraerMasQueElSaldoLanzaSaldoMenorException() {
     assertThrows(SaldoMenorException.class, () -> {
           cuenta.setSaldo(90);
-          cuenta.sacar(1001);
+          cuenta.sacar(100);
     });
   }
 
   @Test
-  public void ExtraerMasDe1000() {
+  public void extraerMasQueElLimiteDiarioLanzaMaximoExtraccionDiarioException() {
+    //TODO Una cosa es el monto maximo de extraccion, otra es extraer mas que ese monto maximo de una sola extraccion
     assertThrows(MaximoExtraccionDiarioException.class, () -> {
       cuenta.setSaldo(5000);
       cuenta.sacar(1001);
@@ -61,7 +75,7 @@ public class MonederoTest {
   }
 
   @Test
-  public void ExtraerMontoNegativo() {
+  public void extraerMontoNegativo() {
     assertThrows(MontoNegativoException.class, () -> cuenta.sacar(-500));
   }
 

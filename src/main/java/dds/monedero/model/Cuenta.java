@@ -48,10 +48,11 @@ public class Cuenta {
     double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
     double limite = 1000 - montoExtraidoHoy;
     if (cuanto > limite) {
-      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000
+      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000 //TODO El meter el 1000 hardcodeado en una variable
           + " diarios, límite: " + limite);
     }
     new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
+
   }
 
   public void agregarMovimiento(LocalDate fecha, double cuanto, boolean esDeposito) {
