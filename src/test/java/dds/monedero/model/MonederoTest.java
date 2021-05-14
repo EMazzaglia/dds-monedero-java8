@@ -7,6 +7,8 @@ import dds.monedero.exceptions.SaldoMenorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MonederoTest {
@@ -20,48 +22,47 @@ public class MonederoTest {
 
   @Test
   void puedoRealizarUnDepositoDeDinero() {
-    Double montoPrevio = cuenta.getSaldo();
-    Integer montoADepositar = 1500;
-    assertDoesNotThrow(()-> cuenta.poner(montoADepositar));
+    BigDecimal montoADepositar = new BigDecimal(1500);
+    assertDoesNotThrow(()-> cuenta.depositarDinero(montoADepositar));
   }
 
   @Test
   void realizarUnDepositoDe500PesosumentaMiSaldoEn500Pesos() {
-    Double montoPrevio = cuenta.getSaldo();
-    Integer montoADepositar = 500;
-    cuenta.poner(montoADepositar);
-    assertEquals(cuenta.getSaldo(),montoPrevio + montoADepositar);
+    BigDecimal montoPrevio = cuenta.getSaldo();
+    BigDecimal montoADepositar = new BigDecimal(500);
+    cuenta.depositarDinero(montoADepositar);
+    assertEquals(cuenta.getSaldo(),montoPrevio.add(montoADepositar));
   }
 
   @Test
   void ponerMontoNegativoLanzaMontoNegativoException() {
-    assertThrows(MontoNegativoException.class, () -> cuenta.poner(-1500));
+    assertThrows(MontoNegativoException.class, () -> cuenta.depositarDinero(new BigDecimal(-1500)));
   }
 
   @Test
   void hacerTresDepositosNoLanzaNingunaExcepcion() {
     assertDoesNotThrow(()-> {
-      cuenta.poner(1500);
-      cuenta.poner(456);
-      cuenta.poner(1900);
+      cuenta.depositarDinero(new BigDecimal(1500));
+      cuenta.depositarDinero(new BigDecimal(456));
+      cuenta.depositarDinero(new BigDecimal(1900));
     });
   }
 
   @Test
   void hacerMasDeTresDepositosLanzaMaximaCantidadDepositosException() {
     assertThrows(MaximaCantidadDepositosException.class, () -> {
-          cuenta.poner(1500);
-          cuenta.poner(456);
-          cuenta.poner(1900);
-          cuenta.poner(245);
+      cuenta.depositarDinero(new BigDecimal(1500));
+      cuenta.depositarDinero(new BigDecimal(456));
+      cuenta.depositarDinero(new BigDecimal(1900));
+      cuenta.depositarDinero(new BigDecimal(245));
     });
   }
 
   @Test
   void extraerMasQueElSaldoLanzaSaldoMenorException() {
     assertThrows(SaldoMenorException.class, () -> {
-          cuenta.setSaldo(90);
-          cuenta.sacar(100);
+          cuenta.setSaldo(new BigDecimal(90));
+          cuenta.extraerDinero(new BigDecimal(100));
     });
   }
 
@@ -69,14 +70,14 @@ public class MonederoTest {
   public void extraerMasQueElLimiteDiarioLanzaMaximoExtraccionDiarioException() {
     //TODO Una cosa es el monto maximo de extraccion, otra es extraer mas que ese monto maximo de una sola extraccion
     assertThrows(MaximoExtraccionDiarioException.class, () -> {
-      cuenta.setSaldo(5000);
-      cuenta.sacar(1001);
+      cuenta.setSaldo(new BigDecimal(5000));
+      cuenta.extraerDinero(new BigDecimal(1001));
     });
   }
 
   @Test
   public void extraerMontoNegativo() {
-    assertThrows(MontoNegativoException.class, () -> cuenta.sacar(-500));
+    assertThrows(MontoNegativoException.class, () -> cuenta.extraerDinero(new BigDecimal(-500)));
   }
 
 }
